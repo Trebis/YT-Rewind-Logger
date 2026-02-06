@@ -217,6 +217,23 @@ body {
   display: flex;
   gap: 3px;
   align-items: center;
+  padding: 4px;
+  margin: -4px;
+}
+
+.mastery-dots.clickable {
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.mastery-dots.clickable:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: scale(1.05);
+}
+
+.mastery-dots.clickable:active {
+  transform: scale(0.95);
 }
 
 .mastery-dot {
@@ -224,14 +241,13 @@ body {
   height: 8px;
   border-radius: 50%;
   background: #2a3a5c;
+  transition: all 0.2s;
 }
 
 .mastery-dot.filled {
-  background: #4CAF50;
+  /* Background color set inline via style attribute */
+  /* Colors: #e57373 (red), #ffc107 (amber), #4CAF50 (green) */
 }
-
-.mastery-dot.filled.level-3 { background: #66bb6a; }
-.mastery-dot.filled.level-4 { background: #ffd54f; }
 
 /* Action buttons */
 .action-btn {
@@ -293,6 +309,40 @@ body {
 .context-meta {
   font-size: 10px;
   color: #5a6a8a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.context-meta-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.video-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #4CAF50;
+  text-decoration: none;
+  font-size: 10px;
+  border-radius: 3px;
+  transition: all 0.15s;
+  background: rgba(76, 175, 80, 0.1);
+  border: 1px solid transparent;
+}
+
+.video-link:hover {
+  background: rgba(76, 175, 80, 0.2);
+  border-color: #4CAF50;
+  transform: scale(1.1);
+}
+
+.video-link:active {
+  transform: scale(0.95);
 }
 
 .context-loading {

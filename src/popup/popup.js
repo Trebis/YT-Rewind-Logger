@@ -143,12 +143,10 @@ function renderWordTable(words) {
     row.innerHTML = `
       <td class="col-word" title="${escapeHtml(word.word)}">${escapeHtml(word.word)}</td>
       <td class="col-count">${word.encounters}</td>
-      <td class="col-mastery">${renderMasteryDots(word.masteryLevel)}</td>
+      <td class="col-mastery">${renderMasteryDots(word.id, word.masteryLevel)}</td>
       <td class="col-first">${formatDate(word.firstSeen)}</td>
       <td class="col-last">${formatDate(word.lastSeen)}</td>
       <td class="col-actions">
-        <button class="action-btn learned ${word.learned ? 'active' : ''}"
-                data-action="learned" title="Mark as learned">&#10003;</button>
         <button class="action-btn exclude ${word.excluded ? 'active' : ''}"
                 data-action="exclude" title="Exclude from tracking">&#10005;</button>
       </td>
@@ -156,8 +154,20 @@ function renderWordTable(words) {
 
     // Click row to expand context
     row.addEventListener('click', (e) => {
-      if (e.target.closest('.action-btn')) return;
+      if (e.target.closest('.action-btn') || e.target.closest('.mastery-dots')) return;
       toggleContext(word.id, row);
+    });
+
+    // Mastery dots click handler
+    row.querySelectorAll('.mastery-dots.clickable').forEach(dots => {
+      dots.addEventListener('click', (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        const currentLevel = parseInt(dots.dataset.level, 10);
+        const nextLevel = (currentLevel + 1) % 3;
+        console.log('Mastery click:', dots.dataset.wordId, 'current:', currentLevel, 'next:', nextLevel);
+        handleMasteryChange(dots.dataset.wordId, nextLevel);
+      });
     });
 
     // Action buttons
@@ -177,13 +187,22 @@ function renderWordTable(words) {
   }
 }
 
-function renderMasteryDots(level) {
-  let html = '<div class="mastery-dots">';
-  for (let i = 0; i < 5; i++) {
-    const filled = i < level + 1 ? 'filled' : '';
-    const levelClass = level >= 3 ? `level-${level}` : '';
-    html += `<span class="mastery-dot ${filled} ${levelClass}"></span>`;
+function renderMasteryDots(wordId, level) {
+  // Clamp level to 0-2 range
+  const clampedLevel = Math.max(0, Math.min(2, level));
+
+  // Color progression: red → amber → green
+  const colors = ['#e57373', '#ffc107', '#4CAF50'];
+  const fillColor = colors[clampedLevel];
+
+  let html = `<div class="mastery-dots clickable" data-word-id="${wordId}" data-level="${clampedLevel}" title="Click to change mastery level">`;
+
+  for (let i = 0; i < 3; i++) {
+    const filled = i <= clampedLevel ? 'filled' : '';
+    const style = filled ? `style="background: ${fillColor};"` : '';
+    html += `<span class="mastery-dot ${filled}" ${style}></span>`;
   }
+
   html += '</div>';
   return html;
 }
@@ -236,9 +255,16 @@ async function loadAndShowContext(wordId, row) {
       const highlighted = highlightWord(ctx.sentence, word);
       const time = formatTimestamp(ctx.timestampMs);
       const title = escapeHtml(ctx.videoTitle || 'Unknown video');
+      const videoUrl = buildVideoUrl(ctx.videoId, ctx.timestampMs);
+      const linkIcon = videoUrl
+        ? `<a href="${escapeHtml(videoUrl)}" class="video-link" title="Open video at ${time}" target="_blank" rel="noopener">&#9654;</a>`
+        : '';
       html += `
         <div class="context-sentence">${highlighted}</div>
-        <div class="context-meta">${title} &mdash; ${time}</div>
+        <div class="context-meta">
+          ${linkIcon}
+          <span class="context-meta-text">${title} &mdash; ${time}</span>
+        </div>
       `;
     }
     html += '</div></td>';
@@ -250,19 +276,23 @@ async function loadAndShowContext(wordId, row) {
 
 // --- Actions ---
 
+async function handleMasteryChange(wordId, newLevel) {
+  try {
+    console.log('handleMasteryChange called:', wordId, newLevel);
+    const response = await chrome.runtime.sendMessage({
+      type: MSG.UPDATE_WORD,
+      payload: { wordId, updates: { masteryLevel: newLevel } }
+    });
+    console.log('Update response:', response);
+    await refreshWordList();
+  } catch (e) {
+    console.error('Mastery update failed:', e);
+  }
+}
+
 async function handleAction(wordId, action) {
   try {
-    if (action === 'learned') {
-      const response = await chrome.runtime.sendMessage({
-        type: MSG.GET_WORDS,
-        payload: { filter: 'all', search: '' }
-      });
-      const word = response?.words?.find(w => w.id === wordId);
-      await chrome.runtime.sendMessage({
-        type: MSG.UPDATE_WORD,
-        payload: { wordId, updates: { learned: !word?.learned } }
-      });
-    } else if (action === 'exclude') {
+    if (action === 'exclude') {
       const response = await chrome.runtime.sendMessage({
         type: MSG.GET_WORDS,
         payload: { filter: 'all', search: '' }
@@ -343,4 +373,25 @@ function debounce(fn, delay) {
     clearTimeout(timer);
     timer = setTimeout(() => fn(...args), delay);
   };
+}
+
+function buildVideoUrl(videoId, timestampMs) {
+  if (!videoId) return null;
+
+  // Detect site type by videoId format
+  // YouTube: 11 chars, alphanumeric + underscore/dash
+  // DreamingSpanish: 24 chars, hex (0-9a-f)
+  const isYouTube = /^[A-Za-z0-9_-]{11}$/.test(videoId);
+  const isDreamingSpanish = /^[0-9a-f]{24}$/.test(videoId);
+
+  if (isYouTube) {
+    const seconds = Math.floor(timestampMs / 1000);
+    return `https://www.youtube.com/watch?v=${videoId}&t=${seconds}`;
+  } else if (isDreamingSpanish) {
+    return `https://app.dreaming.com/spanish/watch?id=${videoId}&position=${timestampMs}`;
+  }
+
+  // Fallback: assume YouTube if format unclear
+  const seconds = Math.floor(timestampMs / 1000);
+  return `https://www.youtube.com/watch?v=${videoId}&t=${seconds}`;
 }

@@ -70,7 +70,6 @@ async function handleLogWords(db, payload) {
     if (existing) {
       existing.encounters += 1;
       existing.lastSeen = Date.now();
-      existing.masteryLevel = computeMastery(existing.encounters, existing.learned);
       await idbPut(wordStore, existing);
       updatedWords++;
     } else {
@@ -123,14 +122,6 @@ async function handleLogWords(db, payload) {
   return { newWords, updatedWords, totalLogged: words.length };
 }
 
-function computeMastery(encounters, userMarkedLearned) {
-  if (userMarkedLearned) return 4;
-  if (encounters >= 20) return 3;
-  if (encounters >= 10) return 2;
-  if (encounters >= 3) return 1;
-  return 0;
-}
-
 // --- Word Queries ---
 
 async function handleGetWords(db, payload = {}) {
@@ -141,17 +132,17 @@ async function handleGetWords(db, payload = {}) {
   // Apply filters
   const { filter, search, sort } = payload;
 
-  if (filter === 'learned') {
-    words = words.filter(w => w.learned);
-  } else if (filter === 'excluded') {
-    words = words.filter(w => w.excluded);
+  if (filter === 'known') {
+    words = words.filter(w => w.masteryLevel === 2 && !w.excluded);
+  } else if (filter === 'learning') {
+    words = words.filter(w => w.masteryLevel === 1 && !w.excluded);
   } else if (filter === 'new') {
     words = words.filter(w => w.masteryLevel === 0 && !w.excluded);
-  } else if (filter === 'familiar') {
-    words = words.filter(w => w.masteryLevel >= 2 && !w.learned && !w.excluded);
+  } else if (filter === 'excluded') {
+    words = words.filter(w => w.excluded);
   } else if (filter !== 'all') {
-    // Default: hide excluded and learned
-    words = words.filter(w => !w.excluded && !w.learned);
+    // Default: show New + Learning (in progress)
+    words = words.filter(w => !w.excluded && w.masteryLevel < 2);
   }
 
   // Search
@@ -186,9 +177,8 @@ async function handleUpdateWord(db, payload) {
   if (!word) return { error: 'Word not found' };
 
   // Apply allowed updates
-  if ('learned' in updates) {
-    word.learned = updates.learned;
-    word.masteryLevel = computeMastery(word.encounters, word.learned);
+  if ('masteryLevel' in updates) {
+    word.masteryLevel = Math.max(0, Math.min(2, updates.masteryLevel));
   }
   if ('excluded' in updates) {
     word.excluded = updates.excluded;
