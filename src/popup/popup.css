@@ -1,0 +1,363 @@
+/* Base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  width: 480px;
+  max-height: 560px;
+  font-family: 'Segoe UI', -apple-system, sans-serif;
+  font-size: 13px;
+  color: #e0e0e0;
+  background: #1a1a2e;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #16213e;
+  border-bottom: 1px solid #0f3460;
+}
+
+.header-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #e0e0e0;
+  letter-spacing: 0.3px;
+}
+
+.session-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border: 1px solid #4CAF50;
+  border-radius: 4px;
+  background: transparent;
+  color: #4CAF50;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.session-btn:hover {
+  background: rgba(76, 175, 80, 0.15);
+}
+
+.session-btn.active {
+  background: #4CAF50;
+  color: #fff;
+}
+
+.session-btn.active:hover {
+  background: #43a047;
+}
+
+/* Session Stats Bar */
+.session-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 14px;
+  background: rgba(76, 175, 80, 0.1);
+  border-bottom: 1px solid rgba(76, 175, 80, 0.2);
+  font-size: 12px;
+  color: #81c784;
+}
+
+.stat-sep {
+  color: #4a5568;
+  margin: 0 4px;
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  gap: 6px;
+  padding: 8px 14px;
+  background: #16213e;
+  border-bottom: 1px solid #0f3460;
+}
+
+.search-input {
+  flex: 1;
+  padding: 5px 10px;
+  border: 1px solid #2a3a5c;
+  border-radius: 4px;
+  background: #0f1b38;
+  color: #e0e0e0;
+  font-size: 12px;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: #4CAF50;
+}
+
+.search-input::placeholder {
+  color: #5a6a8a;
+}
+
+.control-select {
+  padding: 5px 8px;
+  border: 1px solid #2a3a5c;
+  border-radius: 4px;
+  background: #0f1b38;
+  color: #e0e0e0;
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+}
+
+.control-select:focus {
+  border-color: #4CAF50;
+}
+
+/* Toggle Row */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 14px;
+  background: #16213e;
+  border-bottom: 1px solid #0f3460;
+  font-size: 11px;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #8a9ab5;
+  cursor: pointer;
+}
+
+.toggle-label input[type="checkbox"] {
+  accent-color: #4CAF50;
+}
+
+.total-count {
+  color: #8a9ab5;
+}
+
+/* Word Table */
+.table-container {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 360px;
+}
+
+.word-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.word-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.word-table th {
+  padding: 6px 8px;
+  background: #0f1b38;
+  border-bottom: 1px solid #2a3a5c;
+  text-align: left;
+  font-weight: 600;
+  color: #8a9ab5;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.word-table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid #1a2744;
+  white-space: nowrap;
+}
+
+.word-table tbody tr {
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.word-table tbody tr:hover {
+  background: rgba(76, 175, 80, 0.08);
+}
+
+.word-table tbody tr.expanded {
+  background: rgba(76, 175, 80, 0.05);
+}
+
+/* Column widths */
+.col-word { width: 35%; }
+.col-count { width: 8%; text-align: center; }
+.col-mastery { width: 17%; }
+.col-first { width: 13%; }
+.col-last { width: 13%; }
+.col-actions { width: 14%; text-align: center; }
+
+/* Mastery dots */
+.mastery-dots {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.mastery-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2a3a5c;
+}
+
+.mastery-dot.filled {
+  background: #4CAF50;
+}
+
+.mastery-dot.filled.level-3 { background: #66bb6a; }
+.mastery-dot.filled.level-4 { background: #ffd54f; }
+
+/* Action buttons */
+.action-btn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 14px;
+  line-height: 1;
+  transition: background 0.15s;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.action-btn.learned {
+  color: #4CAF50;
+}
+
+.action-btn.learned.active {
+  color: #81c784;
+  background: rgba(76, 175, 80, 0.2);
+}
+
+.action-btn.exclude {
+  color: #e57373;
+}
+
+.action-btn.exclude.active {
+  color: #ef5350;
+  background: rgba(229, 115, 115, 0.2);
+}
+
+/* Context row (expanded) */
+.context-row td {
+  padding: 0 !important;
+  border-bottom: 1px solid #2a3a5c;
+}
+
+.context-content {
+  padding: 8px 12px;
+  background: rgba(15, 27, 56, 0.5);
+}
+
+.context-sentence {
+  font-size: 12px;
+  color: #b0bec5;
+  margin-bottom: 4px;
+  line-height: 1.5;
+}
+
+.context-sentence .highlight {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.context-meta {
+  font-size: 10px;
+  color: #5a6a8a;
+}
+
+.context-loading {
+  color: #5a6a8a;
+  font-style: italic;
+  font-size: 11px;
+  padding: 8px 12px;
+}
+
+/* Empty state */
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+  color: #5a6a8a;
+}
+
+.empty-state p {
+  margin-bottom: 8px;
+}
+
+.empty-hint {
+  font-size: 11px;
+  color: #4a5568;
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: #16213e;
+  border-top: 1px solid #0f3460;
+}
+
+.footer-btn {
+  padding: 5px 14px;
+  border: 1px solid #2a3a5c;
+  border-radius: 4px;
+  background: transparent;
+  color: #8a9ab5;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.footer-btn:hover {
+  border-color: #4CAF50;
+  color: #4CAF50;
+}
+
+/* Scrollbar */
+.table-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.table-container::-webkit-scrollbar-track {
+  background: #0f1b38;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+  background: #2a3a5c;
+  border-radius: 3px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+  background: #3a4a6c;
+}

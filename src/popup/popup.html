@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YT Rewind Logger</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <h1 class="header-title">YT Rewind Logger</h1>
+    <button id="session-btn" class="session-btn" title="Start study session">
+      <span id="session-icon">&#9654;</span>
+      <span id="session-label">Start</span>
+    </button>
+  </header>
+
+  <!-- Session Stats Bar -->
+  <div id="session-bar" class="session-bar hidden">
+    <span id="stat-words">0 words</span>
+    <span class="stat-sep">|</span>
+    <span id="stat-new">0 new</span>
+    <span class="stat-sep">|</span>
+    <span id="stat-rewinds">0 rewinds</span>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <input type="text" id="search-input" class="search-input" placeholder="Search words...">
+    <select id="filter-select" class="control-select">
+      <option value="active">Active</option>
+      <option value="all">All</option>
+      <option value="new">New</option>
+      <option value="familiar">Familiar+</option>
+      <option value="learned">Learned</option>
+      <option value="excluded">Excluded</option>
+    </select>
+    <select id="sort-select" class="control-select">
+      <option value="freq">Freq</option>
+      <option value="alpha">A-Z</option>
+      <option value="recent">Recent</option>
+      <option value="mastery">Mastery</option>
+    </select>
+  </div>
+
+  <!-- Stop words toggle -->
+  <div class="toggle-row">
+    <label class="toggle-label">
+      <input type="checkbox" id="stopwords-toggle" checked>
+      <span>Filter stop words</span>
+    </label>
+    <span id="total-count" class="total-count">0 words</span>
+  </div>
+
+  <!-- Word Table -->
+  <div class="table-container">
+    <table class="word-table">
+      <thead>
+        <tr>
+          <th class="col-word">Word</th>
+          <th class="col-count">#</th>
+          <th class="col-mastery">Mastery</th>
+          <th class="col-first">First</th>
+          <th class="col-last">Last</th>
+          <th class="col-actions">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="word-tbody">
+        <!-- Populated by JS -->
+      </tbody>
+    </table>
+    <div id="empty-state" class="empty-state hidden">
+      <p>No words logged yet.</p>
+      <p class="empty-hint">Start a session, then rewind on a YouTube or DreamingSpanish video with Spanish subtitles.</p>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <button id="export-btn" class="footer-btn" title="Export to Anki TSV">Export Anki</button>
+  </div>
+
+  <script src="../shared/constants.js"></script>
+  <script src="popup.js"></script>
+</body>
+</html>

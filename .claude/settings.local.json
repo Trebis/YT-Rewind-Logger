@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.dreamingspanish.com)",
+      "WebFetch(domain:www.dreaming.com)"
+    ]
+  }
+}

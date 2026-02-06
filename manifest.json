@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "YT Rewind Logger",
+  "version": "1.1.0",
+  "description": "Track Spanish vocabulary from YouTube and DreamingSpanish videos — log words every time you rewind",
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "*://*.youtube.com/*",
+    "*://app.dreaming.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/watch*"],
+      "js": ["src/content/youtube/transcript-bridge.js"],
+      "world": "MAIN",
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://*.youtube.com/watch*"],
+      "js": [
+        "src/shared/constants.js",
+        "src/content/word-processor.js",
+        "src/content/youtube/transcript.js",
+        "src/content/youtube/rewind-detector.js",
+        "src/content/youtube/adapter.js",
+        "src/content/content.js"
+      ],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": ["*://app.dreaming.com/*"],
+      "js": ["src/content/dreaming-spanish/vtt-interceptor.js"],
+      "world": "MAIN",
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["*://app.dreaming.com/*"],
+      "js": [
+        "src/shared/constants.js",
+        "src/content/word-processor.js",
+        "src/content/dreaming-spanish/transcript.js",
+        "src/content/dreaming-spanish/rewind-detector.js",
+        "src/content/dreaming-spanish/adapter.js",
+        "src/content/content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "src/popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
